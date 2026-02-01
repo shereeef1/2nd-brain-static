@@ -92,31 +92,43 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Fetch and display documents
-        async function loadDocuments() {
-            try {
-                const response = await fetch('/api/documents.json');
-                const documents = await response.json();
-                
-                const listElement = document.getElementById('document-list');
-                listElement.innerHTML = '';
-                
-                documents.forEach(doc => {
-                    const li = document.createElement('li');
-                    const link = document.createElement('a');
-                    link.href = '#';
-                    link.textContent = doc.frontmatter.title || doc.slug;
-                    link.onclick = (e) => {
-                        e.preventDefault();
-                        loadDocument(doc.slug);
-                    };
-                    li.appendChild(link);
-                    listElement.appendChild(li);
-                });
-            } catch (error) {
-                document.getElementById('document-list').innerHTML = 
-                    '<li class="error">Failed to load documents</li>';
+        // Hardcoded documents for static version
+        const documents = [
+            {
+                slug: 'first-note',
+                frontmatter: {
+                    title: 'My First Note',
+                    date: '2026-02-01T00:00:00.000Z',
+                    tags: ['ideas', 'getting-started']
+                }
+            },
+            {
+                slug: 'second-note',
+                frontmatter: {
+                    title: 'Second Thoughts',
+                    date: '2026-02-01T00:00:00.000Z',
+                    tags: ['thoughts', 'ideas', 'development']
+                }
             }
+        ];
+        
+        // Display documents
+        function loadDocuments() {
+            const listElement = document.getElementById('document-list');
+            listElement.innerHTML = '';
+            
+            documents.forEach(doc => {
+                const li = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = doc.frontmatter.title || doc.slug;
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    loadDocument(doc.slug);
+                };
+                li.appendChild(link);
+                listElement.appendChild(li);
+            });
         }
         
         // Load a specific document
