@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "first-note",
+    "frontmatter": {
+      "title": "My First Note",
+      "date": "2026-02-01T00:00:00.000Z",
+      "tags": ["ideas", "getting-started"]
+    }
+  },
+  {
+    "slug": "second-note",
+    "frontmatter": {
+      "title": "Second Thoughts",
+      "date": "2026-02-01T00:00:00.000Z",
+      "tags": ["thoughts", "ideas", "development"]
+    }
+  }
+]

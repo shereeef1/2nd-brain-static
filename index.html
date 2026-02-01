@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2nd Brain - Static Version</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background: #fff;
+            color: #333;
+        }
+        .sidebar {
+            width: 250px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-right: 1px solid #e0e0e0;
+        }
+        .sidebar h2 {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .sidebar a:hover {
+            background: #e0e0e0;
+        }
+        .content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #d32f2f;
+        }
+        #document-content h1, #document-content h2, #document-content h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        #document-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        #document-content code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h2>Documents</h2>
+        <ul id="document-list">
+            <li class="loading">Loading documents...</li>
+        </ul>
+    </nav>
+    
+    <main class="content">
+        <div id="document-content">
+            <h1>Welcome to 2nd Brain</h1>
+            <p>Select a document from the sidebar to view its content.</p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Fetch and display documents
+        async function loadDocuments() {
+            try {
+                const response = await fetch('/api/documents.json');
+                const documents = await response.json();
+                
+                const listElement = document.getElementById('document-list');
+                listElement.innerHTML = '';
+                
+                documents.forEach(doc => {
+                    const li = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = doc.frontmatter.title || doc.slug;
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        loadDocument(doc.slug);
+                    };
+                    li.appendChild(link);
+                    listElement.appendChild(li);
+                });
+            } catch (error) {
+                document.getElementById('document-list').innerHTML = 
+                    '<li class="error">Failed to load documents</li>';
+            }
+        }
+        
+        // Load a specific document
+        async function loadDocument(slug) {
+            const contentElement = document.getElementById('document-content');
+            contentElement.innerHTML = '<div class="loading">Loading document...</div>';
+            
+            try {
+                const response = await fetch(`/documents/${slug}.md`);
+                if (!response.ok) {
+                    throw new Error('Document not found');
+                }
+                
+                const markdown = await response.text();
+                const html = marked.parse(markdown);
+                contentElement.innerHTML = html;
+            } catch (error) {
+                contentElement.innerHTML = 
+                    '<div class="error">Failed to load document: ' + error.message + '</div>';
+            }
+        }
+        
+        // Load documents on page load
+        loadDocuments();
+    </script>
+</body>
+</html>
